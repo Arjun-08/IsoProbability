@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Iso-Probability Score Calculator{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <header>
+        <div class="navbar">
+            <a href="{{ url_for('home') }}" class="logo">
+                <img src="{{ url_for('static', filename='images/logo.webp') }}" alt="Logo">
+            </a>
+            <nav>
+                <a href="{{ url_for('Calculatescore') }}">Revised score calculator</a>
+                <a href="{{ url_for('isoprobability') }}">Win-Probability</a>
+                <a href="{{ url_for('scorecard') }}">Create a Scorecard</a>
+                <a href="{{ url_for('team') }}">Our Team</a>
+            </nav>
+        </div>
+    </header>
+
+    {% block content %}{% endblock %}
+
+    <footer>
+        <p>Under the guidance of <a href="https://ece.iisc.ac.in/~rajeshs/">RAJESH SUNDARESAN</a></p>
+    </footer>
+</body>
+</html>

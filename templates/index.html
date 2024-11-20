@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Iso-Probability Score Calculator{% endblock %}
+
+{% block content %}
+<div class="homepage">
+    <h1>Welcome to Revised Score Calculator</h1>
+    <p>Iso-probability- balance of chance and skill in every outcome</p>
+    
+    <div class="banner-container">
+        <img src="{{ url_for('static', filename='images/1983 wc.jpg') }}" alt="1983 World Cup" class="active">
+        <img src="{{ url_for('static', filename='images/1992 wc.jpg') }}" alt="1992 World Cup">
+        <img src="{{ url_for('static', filename='images/2007 wc.jpg') }}" alt="2007 World Cup">
+        <img src="{{ url_for('static', filename='images/2011 wc.jpg') }}" alt="2011 World Cup">
+        <img src="{{ url_for('static', filename='images/2024 wc.jpg') }}" alt="2024 World Cup">
+    </div>
+
+    <div class="buttons">
+        <a href="{{ url_for('Calculatescore') }}" class="button">Calculate Score Through Iso-Probability</a>
+        <a href="{{ url_for('scorecard') }}" class="button">Watch Live Match Score</a>
+    </div>
+</div>
+
+<script>
+    // JavaScript for Automatic Banner Slideshow
+    let currentBannerIndex = 0;
+    const banners = document.querySelectorAll('.banner-container img');
+
+    function showNextBanner() {
+        // Hide the current banner
+        banners[currentBannerIndex].classList.remove('active');
+
+        // Move to the next banner
+        currentBannerIndex = (currentBannerIndex + 1) % banners.length;
+
+        // Show the next banner
+        banners[currentBannerIndex].classList.add('active');
+    }
+
+    // Set an interval to automatically switch banners every 3 seconds
+    setInterval(showNextBanner, 3000);
+</script>
+{% endblock %}

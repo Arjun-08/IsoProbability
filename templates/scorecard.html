@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Live Cricket Scoreboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='scorecard.css') }}">
+</head>
+<body>
+    <header class="navbar">
+        <a href="/" class="logo"><img src="{{ url_for('static', filename='images/logo.webp') }}" alt="Logo"></a>
+        <nav>
+            <a href="{{ url_for('isoprobability') }}">Iso-Probability</a>
+            <a href="{{ url_for('scorecard') }}">Scorecard</a>
+            <a href="{{ url_for('team') }}">Our Team</a>
+        </nav>
+    </header>
+    
+    <div class="scoreboard-page">
+        <h2>Live Cricket Scoreboard</h2>
+
+        <!-- Display Flex Container for Score Sections -->
+        <div class="scoreboard-content side-by-side">
+            <div id="current-score">
+                <h3>Current Score</h3>
+                <p>Runs: <span id="runs_display">{{ current_score['runs'] }}</span></p>
+                <p>Wickets: <span id="wickets_display">{{ current_score['wickets'] }}</span></p>
+                <p>Overs: <span id="overs_display">{{ current_score['overs'] }}.{{ current_score['balls'] }}</span></p>
+            </div>
+
+            <!-- Score Update Section -->
+            <div class="score-update">
+                <h3>Update Score</h3>
+                <label for="runs">Runs Scored:</label>
+                <input type="number" id="runs" placeholder="Enter runs (0-6)">
+                
+                <label for="extras">Extras (0 for none):</label>
+                <input type="number" id="extras" placeholder="Enter extras (0 or 1)">
+                
+                <label for="wicket">Wicket (0 or 1):</label>
+                <input type="number" id="wicket" placeholder="Enter 1 if wicket falls, else 0">
+                
+                <button onclick="updateScore()">Update Score</button>
+                <button onclick="clearScore()">Clear Score</button> <!-- New button to clear score -->
+                <button id="interrupt-button" onclick="location.href='{{ url_for('isoprobability') }}'">Interrupt Match? Use IsoProbability</button>
+            </div>
+
+            <!-- Prediction Section -->
+            <div class="prediction-section">
+                <h3>Predict the Next Ball</h3>
+                <select id="prediction">
+                    {% for option in predictions %}
+                    <option value="{{ option }}">{{ option }}</option>
+                    {% endfor %}
+                </select>
+                <button onclick="checkPrediction()">Submit Prediction</button>
+                <button onclick="fetchProbabilities()">Show Probabilities</button>
+                <p id="prediction-result"></p>
+                <p id="probabilities-display"></p> <!-- Placeholder for showing probabilities -->
+            </div> 
+            
+        </div>
+    </div>
+
+    <footer>
+        <p>Under the guidance of <a href="https://ece.iisc.ac.in/~rajeshs/">RAJESH SUNDARESAN</a></p>
+    </footer>
+
+    <script>
+        function updateScore() {
+            const runs = parseInt(document.getElementById("runs").value) || 0;
+            const extras = parseInt(document.getElementById("extras").value) || 0;
+            const wicket = parseInt(document.getElementById("wicket").value) || 0;
+
+            fetch('/update_score', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ runs, extras, wicket })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("runs_display").textContent = data.runs;
+                document.getElementById("wickets_display").textContent = data.wickets;
+                document.getElementById("overs_display").textContent = `${data.overs}.${data.balls}`;
+            });
+        }
+
+        function checkPrediction() {
+            const userPrediction = document.getElementById("prediction").value;
+            const actualOptions = ["wide", "no ball", "wicket", "1", "2", "3", "4", "5", "6"];
+            const actualResult = actualOptions[Math.floor(Math.random() * actualOptions.length)];
+
+            fetch('/check_prediction', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ prediction: userPrediction, actual_result: actualResult })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("prediction-result").textContent = data.message;
+            });
+        }
+
+        // Function to clear the form inputs
+        function clearForm() {
+            document.getElementById("runs").value = '';
+            document.getElementById("extras").value = '';
+            document.getElementById("wicket").value = '';
+        }
+
+        function clearScore() {
+            fetch('/clear_score', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("runs_display").textContent = data.runs;
+                document.getElementById("wickets_display").textContent = data.wickets;
+                document.getElementById("overs_display").textContent = `${data.overs}.${data.balls}`;
+            });
+        }
+
+        function fetchProbabilities() {
+            const ballsLeft = parseInt(document.getElementById("overs_display").textContent.split(".")[1]) || 1;
+            const wicketsLeft = 10 - parseInt(document.getElementById("wickets_display").textContent);
+
+            fetch('/next_ball_probabilities', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ remaining_balls: ballsLeft, remaining_wickets: wicketsLeft })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Format the probabilities into a display string
+                let probabilityText = "Probabilities for the next ball:<br>";
+                for (const [outcome, probability] of Object.entries(data)) {
+                    probabilityText += `${outcome}: ${(probability * 100).toFixed(2)}%<br>`;
+                }
+                document.getElementById("probabilities-display").innerHTML = probabilityText;
+            });
+        }        
+        
+    </script>
+</body>
+</html>
+
+<style>
+/* Universal Styles */
+body {
+    font-family: 'Lato', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f9;
+}
+
+/* Header Styling */
+.navbar {
+    background-color: #004d80;
+    color: #e4d7d7;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 0;
+}
+
+.navbar .logo img {
+    height: 40px;
+    margin-left: 20px;
+}
+
+.navbar a {
+    color: #e4d7d7;
+    padding: 14px 20px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.navbar a:hover {
+    color: #ffffff;
+}
+
+/* Footer Styling */
+footer {
+    background-color: #004d80;
+    color: #ffffff;
+    text-align: center;
+    padding: 0.5px 0;
+    font-size: 0.9em;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+/* Scoreboard Page Styling */
+.scoreboard-page {
+    text-align: center;
+    padding: 20px;
+    color: #333;
+}
+
+.scoreboard-page h2 {
+    color: #004d80;
+    margin-bottom: 20px;
+}
+
+/* Flex container for side-by-side layout */
+.scoreboard-content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    padding: 20px 0;
+}
+
+/* Styling for individual sections */
+#current-score, .score-update, .prediction-section {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    width: 30%;
+    min-width: 250px;
+    max-width: 300px;
+    text-align: left;
+}
+
+#current-score h3,
+.score-update h3,
+.prediction-section h3 {
+    color: #004d80;
+    margin-bottom: 10px;
+}
+
+/* Labels and Input Styling */
+label {
+    font-weight: bold;
+    color: #333;
+    display: block;
+    margin: 8px 0 5px;
+}
+
+input[type="number"], select {
+    width: 100%;
+    padding: 8px;
+    font-size: 1em;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+/* Button Styling */
+button {
+    width: 100%;
+    padding: 10px 20px;
+    background-color: #ff6347;
+    color: #ffffff;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 5px;
+}
+
+button:hover {
+    background-color: #ff4500;
+}
+
+button#interrupt-button {
+    background-color: #4682b4;
+}
+
+button#interrupt-button:hover {
+    background-color: #3a73a1;
+}
+
+/* Result Display Styling */
+.result {
+    margin-top: 20px;
+    font-size: 1.2em;
+    color: #004d80;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .navbar, footer {
+        padding: 10px 0;
+    }
+
+    .scoreboard-content {
+        flex-direction: column;
+        gap: 15px;
+        align-items: center;
+    }
+
+    #current-score, .score-update, .prediction-section {
+        width: 90%;
+    }
+}
+#probabilities-display {
+    font-size: 0.9em;
+    color: #004d80;
+    margin-top: 10px;
+    background-color: #f9f9f9;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: left;
+}
+
+</style>
