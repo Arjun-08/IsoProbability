@@ -78,6 +78,9 @@ In the Cambridge vs. Oxford match on July 20, 2003:
 ---
 
 ## **Demo**
+
+Please note that, I have used some random values to show the demonstration. 
+
    [https://drive.google.com/file/d/19fm0A0uYXm1Hi-HAtmbeExhweFYqHUPs/view?usp=drive_link]
 
 
@@ -85,4 +88,6 @@ In the Cambridge vs. Oxford match on July 20, 2003:
 
 The Iso-Probability Criterion provides a fairer alternative to existing methods like DL by preserving the balance of winning probabilities during interruptions. Through rigorous modeling and testing, this approach has demonstrated its potential to transform cricket match adjustments.
 
+## Contact
 
+If you have any questions or suggestions, please feel free to reach out to me at nvarjunmani07@gmail.com.
