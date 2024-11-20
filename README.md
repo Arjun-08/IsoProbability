@@ -48,19 +48,14 @@ Boundary conditions ensure valid results for edge cases:
 
 ### 4. Parameter Estimation
 - **Wide/No Ball Probability** (`p_x`) is calculated as:
-  \[
-  p_x = \frac{\text{Number of Extras}}{\text{Total Deliveries}}
-  \]
-- **Wicket Probability** uses a Probit Model:
-  \[
-  p(b, w) = \Phi(-\alpha_0 - \alpha_1b - \alpha_2w)
-  \]
-- **Run Probabilities** are modeled using:
-  \[
-  q(i; b, w) = \Phi(\mu_{i+1} - \beta_0 - \beta_1b - \beta_2w) - \Phi(\mu_i - \beta_0 - \beta_1b - \beta_2w)
-  \]
+![image](https://github.com/user-attachments/assets/62002a33-c9a7-4645-9dfd-07c2f047837a)
 
----
+- **Wicket Probability** uses a Probit Model:
+![image](https://github.com/user-attachments/assets/8655d8aa-288e-485a-ab85-e082e6ee301d)
+
+- **Run Probabilities** are modeled using:
+![image](https://github.com/user-attachments/assets/d87bcf84-4942-4ce9-b759-ef0ff79e1b88)
+
 
 ## Results
 
@@ -82,28 +77,12 @@ In the Cambridge vs. Oxford match on July 20, 2003:
 
 ---
 
-## How to Use
+## **Demo**
+   [https://drive.google.com/file/d/19fm0A0uYXm1Hi-HAtmbeExhweFYqHUPs/view?usp=drive_link]
 
-1. **Setup and Installation**
-   - Clone the repository: `git clone <repository-url>`
-   - Install dependencies: `pip install -r requirements.txt`
-
-2. **Running the Application**
-   - Launch the web interface: `python app.py`
-   - Access the functionalities through:
-     - **Score Calculator**
-     - **Win Probability Calculator**
-     - **Score Prediction Dashboard**
-
-3. **Demo**
-   [Insert link to live demo or screenshots]
-
----
 
 ## Conclusion
 
 The Iso-Probability Criterion provides a fairer alternative to existing methods like DL by preserving the balance of winning probabilities during interruptions. Through rigorous modeling and testing, this approach has demonstrated its potential to transform cricket match adjustments.
 
----
 
-Feel free to adapt the content as needed!
